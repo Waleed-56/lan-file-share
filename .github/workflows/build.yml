@@ -42,38 +42,29 @@ jobs:
           unzip
     
     - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        packages: |
+          platform-tools
+          platforms;android-31
+          build-tools;33.0.2
+          cmdline-tools;latest
+        accept-android-sdk-licenses: true
+        log-accepted-android-sdk-licenses: false
+    
+    - name: Verify Android SDK
       run: |
-        # Install Android SDK manually
-        ANDROID_HOME=$HOME/android-sdk
-        mkdir -p $ANDROID_HOME
-        
-        # Download command line tools
-        wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-        unzip -q commandlinetools-linux-*.zip
-        mkdir -p $ANDROID_HOME/cmdline-tools/latest
-        mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/ 2>/dev/null || true
-        
-        # Set up environment
-        export ANDROID_HOME=$ANDROID_HOME
-        export ANDROID_SDK_ROOT=$ANDROID_HOME
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
-        
-        # Accept licenses and install components
-        echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install 'platform-tools' 'platforms;android-31' 'build-tools;31.0.0' > /dev/null 2>&1
-        
-        # Export for subsequent steps
-        echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
-        echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
-        echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
-        echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
-        echo "$ANDROID_HOME/build-tools/31.0.0" >> $GITHUB_PATH
+        echo "ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
+        echo "ANDROID_HOME: $ANDROID_HOME"
+        echo "PATH: $PATH"
+        echo "Checking for AIDL..."
+        which aidl || echo "AIDL not found in PATH"
+        ls -la $ANDROID_SDK_ROOT/build-tools/ 2>/dev/null || echo "No build-tools directory"
+        find $ANDROID_SDK_ROOT -name "aidl" 2>/dev/null || echo "AIDL binary not found"
     
     - name: Build APK with Buildozer
       run: |
         cd ${{ github.workspace }}
-        export ANDROID_HOME=$HOME/android-sdk
-        export ANDROID_SDK_ROOT=$HOME/android-sdk
         buildozer android debug
     
     - name: List build output
