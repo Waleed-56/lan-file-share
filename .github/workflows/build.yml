@@ -8,9 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    runs-on: ubuntu-22.04
     
     steps:
     - name: Checkout code
@@ -19,7 +17,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.10'
+        python-version: '3.11'
 
     - name: Install system dependencies
       run: |
@@ -61,10 +59,13 @@ jobs:
 
     - name: Build with Buildozer
       run: |
-        # Accept licenses and build
-        yes | buildozer android debug
+        # Run buildozer. The --verbose flag will show us exactly what's happening.
+        # We don't use 'yes |' here because we'll let buildozer handle its own prompts or fail with a clear message.
+        buildozer android debug
       env:
         JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+        # This environment variable tells Buildozer to automatically accept licenses
+        APP_ANDROID_ACCEPT_SDK_LICENSE: "1"
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
