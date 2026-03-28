@@ -1,0 +1,237 @@
+🚀 GITHUB SETUP & APK BUILD GUIDE
+==================================
+
+Your LAN File Share project is ready for GitHub! Follow these steps:
+
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 1: CREATE GITHUB REPOSITORY
+────────────────────────────────
+
+1. Go to: https://github.com/new
+2. Repository name: lan-file-share (or your preferred name)
+3. Description: "Mobile-optimized file sharing app for local networks"
+4. Choose visibility: Public or Private
+5. ⚠️  IMPORTANT: Do NOT check:
+   - "Add a README file"
+   - "Add .gitignore"
+   - "Choose a license"
+6. Click "Create repository"
+
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 2: PUSH PROJECT TO GITHUB
+──────────────────────────────
+
+Run this in PowerShell from your project directory:
+
+    python setup_github.py
+
+OR manually run these commands:
+
+    git remote add origin https://github.com/YOUR_USERNAME/lan-file-share.git
+    git branch -m master main
+    git push -u origin main
+
+Replace YOUR_USERNAME with your actual GitHub username.
+
+You may be prompted to authenticate:
+- Use your GitHub username and password
+- Or use a Personal Access Token (better security)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 3: AUTOMATIC APK BUILD (GitHub Actions)
+─────────────────────────────────────────────
+
+After pushing to GitHub:
+
+1. Go to your repository: https://github.com/YOUR_USERNAME/lan-file-share
+
+2. Click "Actions" tab at the top
+
+3. You should see "Build APK" workflow running
+   - ⏳ First build takes 10-20 minutes
+   - Building Android SDK and dependencies
+   - Be patient, this is normal!
+
+4. Wait for workflow to complete (green checkmark)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 4: DOWNLOAD APK FILE
+─────────────────────────
+
+Once build completes:
+
+1. Go to "Actions" tab in GitHub
+2. Click the latest workflow run ("Build APK")
+3. Scroll down to "Artifacts" section
+4. Click "apk-debug" to download
+
+You should get a ZIP file containing the APK.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 5: INSTALL APK ON ANDROID
+──────────────────────────────
+
+1. Transfer APK to your Android phone via:
+   - Email
+   - USB file transfer
+   - Cloud storage (Google Drive, OneDrive, etc.)
+   - ADB: adb install app-debug.apk
+
+2. On Android phone:
+   - Go to Settings → Security
+   - Enable "Unknown Sources" or "Install from unknown sources"
+   - Open the APK file
+   - Tap "Install"
+   - Launch the app!
+
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 6: FUTURE BUILDS (OPTIONAL)
+────────────────────────────────
+
+Every time you push to GitHub, APK rebuilds automatically!
+
+Make changes:
+    git add .
+    git commit -m "feat: Add new feature"
+    git push
+
+The APK will rebuild automatically in GitHub Actions.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+TROUBLESHOOTING
+───────────────
+
+❌ "remote already exists"
+   → Run: git remote remove origin
+   → Then: git remote add origin https://github.com/...
+
+❌ Build fails in GitHub Actions
+   → Check the "Actions" tab for error messages
+   → Common issues:
+      • Missing dependencies in requirements.txt
+      • Syntax errors in code
+      • Check console output for details
+
+❌ APK won't install on phone
+   → Ensure Android 5.0+ (API 21+)
+   → Enable "Unknown Sources" in settings
+   → Check storage space (50MB minimum)
+
+❌ Can't connect to app after install
+   → Both phone and computer must be on SAME WiFi network
+   → Check firewall isn't blocking port 5000
+   → Check QR code shows correct IP address
+
+═══════════════════════════════════════════════════════════════════════════════
+
+USEFUL GITHUB FEATURES
+──────────────────────
+
+📊 View Build Status:
+   Settings → Actions → General
+
+📦 View All Artifacts:
+   Every workflow run stores APK for 90 days
+
+🔔 Watch Notifications:
+   Get alerts for build failures
+
+⭐ Star the Repository:
+   Show your support!
+
+═══════════════════════════════════════════════════════════════════════════════
+
+WHAT'S INCLUDED IN YOUR SETUP
+──────────────────────────────
+
+✅ GitHub Actions Workflow (.github/workflows/build.yml)
+   - Automatically builds APK on every push
+   - Creates artifacts for download
+   - Supports releases and tags
+
+✅ Buildozer Configuration (buildozer.spec)
+   - Configured for Android debug builds
+   - All necessary permissions set
+   - Optimized for Kivy apps
+
+✅ Project Structure
+   - app.py: Flask backend
+   - main.py: Kivy mobile app
+   - templates/: HTML templates
+   - static/: CSS, JS, assets
+   - requirements.txt: Python dependencies
+
+✅ Documentation
+   - README.md: Complete guide
+   - This file: Setup instructions
+
+═══════════════════════════════════════════════════════════════════════════════
+
+QUICK COMMAND REFERENCE
+───────────────────────
+
+# View git status
+git status
+
+# Check commits
+git log --oneline
+
+# See what will be pushed
+git log origin/main..main
+
+# Push latest changes
+git push
+
+# Pull latest from GitHub
+git pull
+
+# Create a release (tags)
+git tag v1.0.0
+git push --tags
+
+═══════════════════════════════════════════════════════════════════════════════
+
+SECURITY NOTES
+──────────────
+
+🔒 GitHub Credentials:
+   - Never commit passwords or API keys
+   - Use .gitignore to exclude sensitive files
+   - Use GitHub Secrets for environment variables
+
+🔒 Your APK:
+   - Keep debug builds private if possible
+   - Use release builds for distribution
+   - Sign APKs before publishing to Play Store
+
+═══════════════════════════════════════════════════════════════════════════════
+
+NEXT STEPS
+──────────
+
+1. Create GitHub repository (5 minutes)
+2. Run setup_github.py (2 minutes)
+3. Wait for APK build (15-20 minutes)
+4. Download APK (1 minute)
+5. Install on phone (5 minutes)
+6. Test the app!
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Ready to start? 🎉
+
+1. Create repo: https://github.com/new
+2. Run: python setup_github.py
+3. Wait for build in Actions tab
+4. Download APK from artifacts
+
+Questions? Check README.md for detailed documentation.
+
+═══════════════════════════════════════════════════════════════════════════════

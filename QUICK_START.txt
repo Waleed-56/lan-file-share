@@ -1,0 +1,75 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                          🚀 QUICK START GUIDE                                 ║
+║                    GitHub & APK Build (3 Simple Steps)                        ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+
+┌─ STEP 1: CREATE GITHUB REPO (5 min) ───────────────────────────────────────┐
+│                                                                               │
+│ 1. Visit: https://github.com/new                                            │
+│ 2. Name: lan-file-share                                                     │
+│ 3. Visibility: Public                                                       │
+│ 4. ⚠️  DON'T check Add README, .gitignore, or License                       │
+│ 5. Click "Create repository"                                                │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─ STEP 2: PUSH TO GITHUB (2 min) ───────────────────────────────────────────┐
+│                                                                               │
+│ Open PowerShell in your project folder and run:                              │
+│                                                                               │
+│     python setup_github.py                                                  │
+│                                                                               │
+│ Follow the interactive prompts:                                              │
+│ • Enter GitHub username                                                      │
+│ • Enter repository name (same as Step 1)                                     │
+│ • Confirm repo was created                                                   │
+│                                                                               │
+│ ✓ Your code is now on GitHub!                                               │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─ STEP 3: WAIT FOR APK BUILD (15-20 min) ───────────────────────────────────┐
+│                                                                               │
+│ After pushing:                                                               │
+│                                                                               │
+│ 1. Go to your GitHub repo                                                    │
+│ 2. Click "Actions" tab                                                       │
+│ 3. Watch "Build APK" workflow run                                            │
+│ 4. When it shows ✓ (green checkmark), click the workflow                     │
+│ 5. Scroll down to "Artifacts" and download "apk-debug"                       │
+│                                                                               │
+│ ✓ APK file is ready to install!                                             │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+
+BONUS: INSTALL APK ON PHONE
+────────────────────────────
+
+1. Send APK to your phone
+2. On phone: Settings → Security → Enable "Unknown Sources"
+3. Open APK file → Install
+4. Launch app!
+
+Your app is now installed on your phone AND on GitHub! 🎉
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+TIME ESTIMATE:
+  • Step 1: 5 minutes
+  • Step 2: 2 minutes  
+  • Step 3: 15-20 minutes (automated)
+  • Install: 5 minutes
+  ────────────────────
+  TOTAL: ~30 minutes to working app!
+
+═══════════════════════════════════════════════════════════════════════════════
+
+NEED HELP?
+──────────
+See GITHUB_SETUP.txt for detailed troubleshooting
+See README.md for feature documentation
