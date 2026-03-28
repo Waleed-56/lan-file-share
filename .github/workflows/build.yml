@@ -11,12 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: false
     
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.10'
     
@@ -46,25 +47,44 @@ jobs:
       with:
         packages: |
           platform-tools
-          platforms;android-31
-          build-tools;33.0.2
+          platforms;android-34
+          build-tools;34.0.0
           cmdline-tools;latest
         accept-android-sdk-licenses: true
         log-accepted-android-sdk-licenses: false
     
+    - name: Install AIDL explicitly
+      run: |
+        # Try to install AIDL if not included in build-tools
+        echo "Installing AIDL..."
+        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install 'build-tools;34.0.0' > /dev/null 2>&1 || true
+        # Make sure AIDL is executable
+        find $ANDROID_SDK_ROOT -name "aidl" -type f -exec chmod +x {} \; 2>/dev/null || true
+    
     - name: Verify Android SDK
       run: |
+        echo "=== ANDROID ENVIRONMENT ==="
         echo "ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
         echo "ANDROID_HOME: $ANDROID_HOME"
-        echo "PATH: $PATH"
-        echo "Checking for AIDL..."
-        which aidl || echo "AIDL not found in PATH"
-        ls -la $ANDROID_SDK_ROOT/build-tools/ 2>/dev/null || echo "No build-tools directory"
-        find $ANDROID_SDK_ROOT -name "aidl" 2>/dev/null || echo "AIDL binary not found"
+        echo "PATH includes Android: $(echo $PATH | grep -o "$ANDROID_SDK_ROOT" | wc -l) paths"
+        
+        echo "=== AIDL CHECK ==="
+        echo "Checking for AIDL in PATH..."
+        which aidl || echo "❌ AIDL not found in PATH"
+        
+        echo "Checking build-tools directory..."
+        ls -la $ANDROID_SDK_ROOT/build-tools/ 2>/dev/null || echo "❌ No build-tools directory"
+        
+        echo "Finding AIDL binary..."
+        find $ANDROID_SDK_ROOT -name "aidl" -type f 2>/dev/null | head -5 || echo "❌ AIDL binary not found"
+        
+        echo "Checking AIDL version..."
+        aidl --version 2>/dev/null || echo "❌ Cannot run aidl --version"
     
     - name: Build APK with Buildozer
       run: |
         cd ${{ github.workspace }}
+        echo "Starting buildozer with Android SDK at: $ANDROID_SDK_ROOT"
         buildozer android debug
     
     - name: List build output
@@ -77,7 +97,7 @@ jobs:
       continue-on-error: true
     
     - name: Upload APK artifact
-      uses: actions/upload-artifact@v4.4.0
+      uses: actions/upload-artifact@v4.4.3
       with:
         name: apk-debug
         path: |
