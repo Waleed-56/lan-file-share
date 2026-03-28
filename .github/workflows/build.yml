@@ -9,25 +9,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
     
     steps:
-    - uses: actions/checkout@v4.2.2
-    
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Set up Python
-      uses: actions/setup-python@v5.4.0
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install buildozer cython
-        pip install kivy
-        pip install flask werkzeug requests qrcode pillow
-    
+
     - name: Install system dependencies
       run: |
         sudo apt-get update
@@ -35,124 +26,52 @@ jobs:
           build-essential \
           git \
           python3-dev \
-          python3-openssl \
-          openjdk-11-jdk \
-          build-essential \
+          ffmpeg \
+          libsdl2-dev \
+          libsdl2-image-dev \
+          libsdl2-mixer-dev \
+          libsdl2-ttf-dev \
+          libportmidi-dev \
+          libswscale-dev \
+          libavformat-dev \
+          libavcodec-dev \
+          zlib1g-dev \
+          libgstreamer1.0-dev \
+          gstreamer1.0-plugins-base \
+          gstreamer1.0-plugins-good \
           libffi-dev \
-          wget \
-          unzip
-    
-    - name: Setup Android SDK with AIDL
+          libssl-dev \
+          openjdk-17-jdk \
+          zip \
+          unzip \
+          autoconf \
+          libtool \
+          pkg-config \
+          cmake \
+          gettext \
+          libncurses5-dev \
+          libncursesw5-dev \
+          libtinfo5 \
+          libstdc++6 \
+          libgtk2.0-0 \
+          libpangox-1.0-0 \
+          libpangoxft-1.0-0 \
+          libidn11
+
+    - name: Install Buildozer and Cython
       run: |
-        echo "=== Installing Android SDK with guaranteed AIDL ==="
-        
-        # Use Ubuntu's Android SDK package (more reliable)
-        sudo apt-get update
-        sudo apt-get install -y android-sdk android-sdk-build-tools android-sdk-platform-tools
-        
-        # Set Android home
-        export ANDROID_HOME=/usr/lib/android-sdk
-        export ANDROID_SDK_ROOT=/usr/lib/android-sdk
-        
-        # Add to PATH
-        export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools
-        
-        # Accept licenses
-        mkdir -p $HOME/.android
-        echo "android-sdk-license" > $HOME/.android/repositories.cfg
-        yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses > /dev/null 2>&1 || true
-        
-        # Install specific build tools with AIDL
-        $ANDROID_HOME/tools/bin/sdkmanager "build-tools;34.0.0" > /dev/null 2>&1 || true
-        
-        # Alternative: Download AIDL directly if needed
-        if ! which aidl; then
-          echo "AIDL not found, downloading directly..."
-          wget -q https://dl.google.com/android/repository/build-tools_r34-linux.zip
-          unzip -q build-tools_r34-linux.zip
-          sudo mv android-14 /usr/lib/android-sdk/build-tools/34.0.0/ 2>/dev/null || true
-          sudo chmod +x /usr/lib/android-sdk/build-tools/34.0.0/aidl 2>/dev/null || true
-        fi
-        
-        # Final PATH setup
-        echo "ANDROID_HOME=/usr/lib/android-sdk" >> $GITHUB_ENV
-        echo "ANDROID_SDK_ROOT=/usr/lib/android-sdk" >> $GITHUB_ENV
-        echo "/usr/lib/android-sdk/tools/bin" >> $GITHUB_PATH
-        echo "/usr/lib/android-sdk/platform-tools" >> $GITHUB_PATH
-        echo "/usr/lib/android-sdk/build-tools" >> $GITHUB_PATH
-        
-        echo "Android SDK setup complete with AIDL!"
-    
-    - name: Verify Android SDK
+        python -m pip install --upgrade pip
+        pip install "buildozer>=1.5.0" "cython<3.0.0"
+
+    - name: Build with Buildozer
       run: |
-        echo "=== ANDROID ENVIRONMENT ==="
-        echo "ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
-        echo "ANDROID_HOME: $ANDROID_HOME"
-        echo "PATH includes Android: $(echo $PATH | grep -o "$ANDROID_SDK_ROOT" | wc -l) paths"
-        
-        echo "=== AIDL CHECK ==="
-        echo "Checking for AIDL in PATH..."
-        which aidl || echo "❌ AIDL not found in PATH"
-        
-        echo "Checking build-tools directory..."
-        ls -la $ANDROID_SDK_ROOT/build-tools/ 2>/dev/null || echo "❌ No build-tools directory"
-        
-        echo "Finding AIDL binary..."
-        find $ANDROID_SDK_ROOT -name "aidl" -type f 2>/dev/null | head -5 || echo "❌ AIDL binary not found"
-        
-        echo "Checking AIDL version..."
-        aidl --version 2>/dev/null || echo "❌ Cannot run aidl --version"
-        
-        echo "=== SDK COMPONENTS ==="
-        echo "Available platforms:"
-        ls -la $ANDROID_SDK_ROOT/platforms/ 2>/dev/null || echo "No platforms"
-        echo "Available build-tools:"
-        ls -la $ANDROID_SDK_ROOT/build-tools/ 2>/dev/null || echo "No build-tools"
-    
-    - name: Build APK with Buildozer
-      run: |
-        cd ${{ github.workspace }}
-        echo "Starting buildozer with Android SDK at: $ANDROID_SDK_ROOT"
-        buildozer android debug
-    
-    - name: List build output
-      run: |
-        echo "Checking for APK files..."
-        find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
-        echo "Checking buildozer output directories..."
-        ls -la .buildozer/ 2>/dev/null || echo "No .buildozer directory"
-        ls -la bin/ 2>/dev/null || echo "No bin directory"
-      continue-on-error: true
-    
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4.4.3
-      with:
-        name: apk-debug
-        path: |
-          .buildozer/android/platform/build-*/dist/*.apk
-          bin/*.apk
-          *.apk
-        if-no-files-found: warn
-    
-    - name: Create Release
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: actions/create-release@v1.1.4
+        # Use 'yes' to automatically accept all Android SDK licenses
+        yes | buildozer android debug
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-    
-    - name: Upload to Release
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./bin/*.apk
-        asset_name: lanfileshare.apk
-        asset_content_type: application/octet-stream
-      continue-on-error: true
+        name: lan-file-share-apk
+        path: bin/*.apk
