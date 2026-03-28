@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     
     steps:
     - name: Checkout code
@@ -49,14 +51,8 @@ jobs:
           pkg-config \
           cmake \
           gettext \
-          libncurses5-dev \
-          libncursesw5-dev \
-          libtinfo5 \
-          libstdc++6 \
-          libgtk2.0-0 \
-          libpangox-1.0-0 \
-          libpangoxft-1.0-0 \
-          libidn11
+          libtinfo6 \
+          libstdc++6
 
     - name: Install Buildozer and Cython
       run: |
@@ -65,7 +61,7 @@ jobs:
 
     - name: Build with Buildozer
       run: |
-        # Use 'yes' to automatically accept all Android SDK licenses
+        # Accept licenses and build
         yes | buildozer android debug
       env:
         JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
