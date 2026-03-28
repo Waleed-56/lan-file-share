@@ -42,24 +42,48 @@ jobs:
           wget \
           unzip
     
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      with:
-        packages: |
-          platform-tools
-          platforms;android-34
-          build-tools;34.0.0
-          cmdline-tools;latest
-        accept-android-sdk-licenses: true
-        log-accepted-android-sdk-licenses: false
-    
-    - name: Install AIDL explicitly
+    - name: Setup Android SDK Manually
       run: |
-        # Try to install AIDL if not included in build-tools
-        echo "Installing AIDL..."
-        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install 'build-tools;34.0.0' > /dev/null 2>&1 || true
+        echo "=== Setting up Android SDK manually ==="
+        
+        # Create Android SDK directory
+        export ANDROID_HOME=$HOME/android-sdk
+        export ANDROID_SDK_ROOT=$ANDROID_HOME
+        mkdir -p $ANDROID_HOME
+        
+        # Download latest command line tools
+        echo "Downloading Android SDK command line tools..."
+        wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+        unzip -q commandlinetools-linux-*.zip
+        mkdir -p $ANDROID_HOME/cmdline-tools/latest
+        mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/ 2>/dev/null || true
+        
+        # Set PATH
+        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/34.0.0
+        
+        # Accept licenses
+        echo "Accepting Android SDK licenses..."
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1
+        
+        # Install required components
+        echo "Installing Android SDK components..."
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install \
+          'platform-tools' \
+          'platforms;android-34' \
+          'build-tools;34.0.0' \
+          'cmdline-tools;latest' > /dev/null 2>&1
+        
         # Make sure AIDL is executable
-        find $ANDROID_SDK_ROOT -name "aidl" -type f -exec chmod +x {} \; 2>/dev/null || true
+        find $ANDROID_HOME -name "aidl" -type f -exec chmod +x {} \; 2>/dev/null || true
+        
+        # Export environment variables
+        echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+        echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
+        echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
+        echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+        echo "$ANDROID_HOME/build-tools/34.0.0" >> $GITHUB_PATH
+        
+        echo "Android SDK setup complete!"
     
     - name: Verify Android SDK
       run: |
@@ -80,6 +104,12 @@ jobs:
         
         echo "Checking AIDL version..."
         aidl --version 2>/dev/null || echo "❌ Cannot run aidl --version"
+        
+        echo "=== SDK COMPONENTS ==="
+        echo "Available platforms:"
+        ls -la $ANDROID_SDK_ROOT/platforms/ 2>/dev/null || echo "No platforms"
+        echo "Available build-tools:"
+        ls -la $ANDROID_SDK_ROOT/build-tools/ 2>/dev/null || echo "No build-tools"
     
     - name: Build APK with Buildozer
       run: |
