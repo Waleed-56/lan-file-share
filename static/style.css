@@ -1,0 +1,339 @@
+/* Clear default browser padding/margin and set body look */
+:root {
+    --bg-gradient-start: #0b0f34;
+    --bg-gradient-end: #1f2f5a;
+    --text-color: #f4f7ff;
+    --container-bg: rgba(10, 21, 57, 0.85);
+    --border-color: rgba(47, 95, 174, 0.45);
+    --button-bg: linear-gradient(135deg, #3b82f6, #60a5fa);
+    --file-item-bg: rgba(27, 43, 82, 0.9);
+    --file-border: rgba(82, 150, 253, 0.4);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Inter, 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    color: var(--text-color);
+    min-height: 100vh;
+}
+
+/* Centered card container */
+.container {
+    max-width: 640px;
+    margin: 48px auto;
+    background: var(--container-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    padding: 26px;
+}
+
+.file-item:hover {
+    transform: scale(1.02);
+    transition: 0.2s;
+}
+
+button {
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+body.light {
+    background: white;
+    color: black;
+}
+
+.controls {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.color-picker {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 8px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.color-picker label {
+    font-size: 12px;
+    color: white;
+}
+
+.color-picker input[type="color"] {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #e0e7ff;
+}
+
+.upload-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+input[type='file'] {
+    flex: 1;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+button {
+    background: var(--button-bg);
+    border: none;
+    color: #f8fbff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+}
+
+.file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--file-item-bg);
+    border: 1px solid var(--file-border);
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.file-info {
+    flex: 1;
+    min-width: 0; /* Allow shrinking */
+}
+
+.file-info strong {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 200px; /* Limit name length */
+}
+
+.file-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.file-preview {
+    flex-shrink: 0;
+    margin-left: 10px;
+    font-weight: 600;
+}
+
+.file-item a:hover {
+    text-decoration: underline;
+}
+
+p {
+    margin: 0;
+}
+
+.file-info {
+    font-size: 14px;
+}
+
+.file-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.file-actions a {
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    color: #ef4444;
+}
+
+.delete-btn:hover {
+    color: #dc2626;
+}
+
+.delete {
+    color: #ef4444;
+}
+
+.delete:hover {
+    color: #dc2626;
+}
+
+.file-preview {
+    margin-top: 8px;
+}
+
+.preview-img {
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+body.light {
+    background: #f2f2f2;
+    color: #111;
+}
+
+body.light .container {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light .file-item {
+    background: #f5f7ff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.light button {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #fff;
+}
+
+/* Progress bar styles */
+.progress-container {
+    margin-bottom: 20px;
+    padding: 12px;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 8px;
+}
+
+.progress-info {
+    font-size: 12px;
+    color: #a0aec0;
+    margin-bottom: 8px;
+}
+
+.upload-progress {
+    width: 100%;
+    height: 6px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.upload-progress::-webkit-progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.upload-progress::-webkit-progress-value {
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+.upload-progress::-moz-progress-bar {
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    border-radius: 3px;
+}
+
+/* QR Code Styles */
+.qr-code {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.qr-code img {
+    width: 200px;
+    height: 200px;
+    image-rendering: crisp-edges;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .container {
+        margin: 20px;
+        padding: 16px;
+    }
+
+    .controls {
+        position: static;
+        margin-bottom: 20px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .color-picker {
+        background: rgba(0, 0, 0, 0.7);
+        order: 2;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .file-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .file-info strong {
+        word-break: break-word; /* Allow long names to wrap */
+        max-width: 100%; /* Full width but wrap */
+        white-space: normal; /* Allow wrapping */
+    }
+
+    .file-preview {
+        margin-left: 0;
+        align-self: center;
+    }
+
+    .preview-img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+
+    video {
+        width: 100px;
+    }
+}

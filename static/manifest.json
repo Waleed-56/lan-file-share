@@ -1,0 +1,16 @@
+# Manifest file for the web application, providing metadata for PWA features.
+{
+    "name": "Local Sharing",
+    "short_name": "LAN Sharing",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0f172a",
+    "theme_color": "#3b82f6",
+    "icons": [
+        {
+            "src": "/static/qr_code.png",
+            "sizes": "200x200",
+            "type": "image/png"
+        }
+    ]
+}
