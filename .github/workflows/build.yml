@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     
     steps:
     - uses: actions/checkout@v4
@@ -41,20 +43,31 @@ jobs:
     
     - name: Setup Android SDK
       run: |
-        mkdir -p ~/android-sdk
-        cd ~/android-sdk
+        ANDROID_HOME=$HOME/android-sdk
+        mkdir -p $ANDROID_HOME
+        cd $ANDROID_HOME
+        
+        # Download and setup Android SDK command line tools
         wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
         unzip -q commandlinetools-linux-*.zip
         mkdir -p cmdline-tools/latest
         mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
-        export ANDROID_SDK_ROOT=~/android-sdk
-        export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin
-        yes | sdkmanager --licenses
-        sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0" "ndk;23.1.7779620"
-        echo "ANDROID_SDK_ROOT=~/android-sdk" >> $GITHUB_ENV
-        echo "PATH=$PATH:~/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_ENV
+        
+        # Install SDK components
+        cd cmdline-tools/latest/bin
+        yes | ./sdkmanager --licenses > /dev/null 2>&1
+        ./sdkmanager --install "platform-tools" "platforms;android-31" "build-tools;31.0.0" > /dev/null 2>&1
+        
+        # Export paths for buildozer
+        echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+        echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
+        echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
+        echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
     
     - name: Build APK with Buildozer
+      env:
+        ANDROID_HOME: ${{ env.ANDROID_HOME }}
+        ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
       run: |
         cd ${{ github.workspace }}
         buildozer android debug
