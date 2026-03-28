@@ -9,14 +9,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v4.1.7
     
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v5.1.0
       with:
         python-version: '3.10'
     
@@ -44,27 +42,32 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       with:
-        api-level: 31
-        build-tools: 31.0.0
-        ndk-version: 23.1.7779620
-    
-    - name: Set Android paths
-      run: |
-        echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+        packages: 'platform-tools platforms;android-31 build-tools;31.0.0 ndk;23.1.7779620'
+        accept-android-sdk-licenses: true
+        log-accepted-android-sdk-licenses: false
     
     - name: Build APK with Buildozer
       run: |
         cd ${{ github.workspace }}
         buildozer android debug
+    
+    - name: List build output
+      run: |
+        echo "Checking for APK files..."
+        find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
+        echo "Checking buildozer output directories..."
+        ls -la .buildozer/ 2>/dev/null || echo "No .buildozer directory"
+        ls -la bin/ 2>/dev/null || echo "No bin directory"
       continue-on-error: true
     
     - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.6
       with:
         name: apk-debug
         path: |
           .buildozer/android/platform/build-*/dist/*.apk
           bin/*.apk
+          *.apk
         if-no-files-found: warn
     
     - name: Create Release
