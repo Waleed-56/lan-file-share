@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main, master ]
 
+env:
+  # This stops the Node.js 20 deprecation warnings
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -37,6 +41,7 @@ jobs:
           libavcodec-dev \
           zlib1g-dev \
           libgstreamer1.0-dev \
+          libunwind-dev \
           gstreamer1.0-plugins-base \
           gstreamer1.0-plugins-good \
           libffi-dev \
@@ -59,12 +64,10 @@ jobs:
 
     - name: Build with Buildozer
       run: |
-        # Run buildozer. The --verbose flag will show us exactly what's happening.
-        # We don't use 'yes |' here because we'll let buildozer handle its own prompts or fail with a clear message.
+        # Verbose mode to see any Python-for-Android issues
         buildozer android debug
       env:
         JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-        # This environment variable tells Buildozer to automatically accept licenses
         APP_ANDROID_ACCEPT_SDK_LICENSE: "1"
 
     - name: Upload APK
